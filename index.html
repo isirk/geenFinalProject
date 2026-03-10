@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beam Bending Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <div>
+    <h1>Beam Bending Simulator</h1>
+    <div class="subtitle">Euler-Bernoulli beam theory — real-time interactive analysis</div>
+  </div>
+  <div class="header-badge">Physics Engine</div>
+</header>
+
+<!-- ── Main Layout ─────────────────────────────────────────────────────── -->
+<div class="main-layout">
+
+  <!-- ── Sidebar (Controls) ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Beam Type -->
+    <div class="control-card">
+      <h3>Beam Type</h3>
+      <div class="beam-toggle">
+        <input type="radio" name="beamType" id="radioCantilever" value="cantilever" checked />
+        <label for="radioCantilever" id="labelCantilever">
+          <span class="icon">
+            <!-- Cantilever icon (simple SVG) -->
+            <svg viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="8" width="8" height="16" rx="1" fill="currentColor" opacity="0.4"/>
+              <line x1="10" y1="16" x2="44" y2="16" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <path d="M44 16 L44 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M41 22 L44 22 L47 22" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </span>
+          Cantilever
+        </label>
+
+        <input type="radio" name="beamType" id="radioSimply" value="simplysupported" />
+        <label for="radioSimply" id="labelSimply">
+          <span class="icon">
+            <!-- Simply supported icon -->
+            <svg viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="4" y1="11" x2="44" y2="11" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              <path d="M4 11 L1 18 L7 18 Z" fill="currentColor" opacity="0.6"/>
+              <path d="M44 11 L41 18 L47 18 Z" fill="currentColor" opacity="0.6"/>
+              <path d="M24 11 L24 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M21 17 L24 17 L27 17" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </span>
+          Simply Supported
+        </label>
+      </div>
+    </div>
+
+    <!-- Beam Parameters -->
+    <div class="control-card">
+      <h3>Beam Parameters</h3>
+
+      <div class="slider-row">
+        <label>
+          Length (L)
+          <span id="labelL">2.00 m</span>
+        </label>
+        <div class="slider-num-wrap">
+          <input type="range" id="sliderL" min="0.5" max="5" step="0.05" value="2" />
+          <input type="number" id="numL" min="0.5" max="5" step="0.05" value="2" />
+        </div>
+      </div>
+
+      <div class="slider-row">
+        <label>
+          Applied Load (P)
+          <span id="labelP">1000 N</span>
+        </label>
+        <div class="slider-num-wrap">
+          <input type="range" id="sliderP" min="0" max="10000" step="50" value="1000" />
+          <input type="number" id="numP" min="0" max="10000" step="50" value="1000" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Material -->
+    <div class="control-card">
+      <h3>Material</h3>
+      <div class="select-label">Select material</div>
+      <select id="material">
+        <option value="steel">Steel — E = 200 GPa</option>
+        <option value="aluminum">Aluminum — E = 69 GPa</option>
+        <option value="wood">Wood — E = 12 GPa</option>
+        <option value="titanium">Titanium — E = 116 GPa</option>
+        <option value="copper">Copper — E = 110 GPa</option>
+      </select>
+    </div>
+
+    <!-- Cross-Section -->
+    <div class="control-card">
+      <h3>Cross-Section</h3>
+      <div class="select-label">Section type</div>
+      <select id="sectionType">
+        <option value="rectangular">Rectangular</option>
+        <option value="circular">Circular</option>
+        <option value="ibeam">I-Beam</option>
+      </select>
+
+      <!-- Rectangular dimensions -->
+      <div id="panelRect">
+        <div class="slider-row">
+          <label>Width (b) <span id="labelW">50 mm</span></label>
+          <input type="range" id="sliderWidth" min="10" max="300" step="5" value="50" />
+        </div>
+        <div class="slider-row">
+          <label>Height (h) <span id="labelH">100 mm</span></label>
+          <input type="range" id="sliderHeight" min="10" max="400" step="5" value="100" />
+        </div>
+      </div>
+
+      <!-- Circular dimensions -->
+      <div id="panelCirc" class="hidden">
+        <div class="slider-row">
+          <label>Diameter (d) <span id="labelD">80 mm</span></label>
+          <input type="range" id="sliderDiameter" min="10" max="400" step="5" value="80" />
+        </div>
+      </div>
+
+      <!-- I-Beam dimensions -->
+      <div id="panelIBeam" class="hidden">
+        <div class="slider-row">
+          <label>Flange Width <span id="labelFW">100 mm</span></label>
+          <input type="range" id="sliderFlangeWidth" min="30" max="300" step="5" value="100" />
+        </div>
+        <div class="slider-row">
+          <label>Flange Thickness <span id="labelFT">12 mm</span></label>
+          <input type="range" id="sliderFlangeThickness" min="4" max="50" step="1" value="12" />
+        </div>
+        <div class="slider-row">
+          <label>Web Height <span id="labelWH">150 mm</span></label>
+          <input type="range" id="sliderWebHeight" min="20" max="500" step="5" value="150" />
+        </div>
+        <div class="slider-row">
+          <label>Web Thickness <span id="labelWT">8 mm</span></label>
+          <input type="range" id="sliderWebThickness" min="3" max="30" step="1" value="8" />
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── Main Canvas Area ────────────────────────────────────────────────── -->
+  <main class="canvas-area">
+
+    <!-- Beam Visualization -->
+    <div class="canvas-wrapper">
+      <canvas id="beamCanvas"></canvas>
+    </div>
+
+    <!-- Stress Diagram -->
+    <div class="canvas-wrapper">
+      <canvas id="stressCanvas"></canvas>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Max Deflection (δ_max)</div>
+        <div class="value" id="outDeflection">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Max Stress (σ_max)</div>
+        <div class="value" id="outStress">—</div>
+      </div>
+      <div class="stat-card wide">
+        <div class="label">Stress vs. Yield Strength</div>
+        <div class="value" id="outYield">—</div>
+        <div><span class="badge badge-safe" id="yieldBadge">✓ Safe</span></div>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /.main-layout -->
+
+<!-- ── Theory Section ──────────────────────────────────────────────────── -->
+<section class="theory-section">
+  <h2>📐 Physics &amp; Theory</h2>
+  <div class="theory-grid">
+
+    <div class="theory-card">
+      <h3>Cantilever Beam</h3>
+      <p>Fixed at one end, free at the other. Load <em>P</em> applied at the free end.</p>
+      <div class="formula">δ(x) = (P·x²)/(6EI) · (3L − x)
+δ_max = PL³ / (3EI)
+σ_max = P·L·c / I</div>
+      <ul>
+        <li>Maximum deflection at the free tip</li>
+        <li>Maximum stress at the fixed wall</li>
+        <li>Bending moment: M(x) = P(L − x)</li>
+      </ul>
+    </div>
+
+    <div class="theory-card">
+      <h3>Simply Supported Beam</h3>
+      <p>Supported at both ends. Point load <em>P</em> at the centre.</p>
+      <div class="formula">δ(x) = (P·x)/(48EI)·(3L² − 4x²)  [x ≤ L/2]
+δ_max = PL³ / (48EI)
+σ_max = P·L·c / (4I)</div>
+      <ul>
+        <li>Maximum deflection at the midpoint</li>
+        <li>Maximum stress at the centre</li>
+        <li>Reactions: R_A = R_B = P/2</li>
+      </ul>
+    </div>
+
+    <div class="theory-card">
+      <h3>Key Variables</h3>
+      <ul>
+        <li><strong>E</strong> — Young's modulus (material stiffness)</li>
+        <li><strong>I</strong> — Second moment of area (cross-section shape)</li>
+        <li><strong>c</strong> — Distance from neutral axis to outer fiber</li>
+        <li><strong>L</strong> — Beam length</li>
+        <li><strong>P</strong> — Applied point load</li>
+        <li><strong>σ_y</strong> — Yield strength (material limit)</li>
+      </ul>
+    </div>
+
+    <div class="theory-card">
+      <h3>Cross-Section Properties</h3>
+      <div class="formula">Rectangular:  I = b·h³/12,  c = h/2
+Circular:     I = π·d⁴/64, c = d/2
+I-Beam:       I = 2·I_flange + I_web</div>
+      <p>A larger <em>I</em> (deeper or wider section) drastically reduces deflection and stress — this is why I-beams are used in construction!</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  Beam Bending Simulator · Euler-Bernoulli beam theory · Vanilla HTML/CSS/JS ·
+  <a href="https://github.com/isirk/geenFinalProject" style="color: var(--accent); text-decoration:none;">GitHub</a>
+</footer>
+
+<!-- Scripts -->
+<script src="js/beam.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+  // Polyfill for :has() — add .checked class to selected beam type label
+  (function() {
+    function updateBeamLabels() {
+      document.querySelectorAll('input[name="beamType"]').forEach(function(r) {
+        var lbl = r.nextElementSibling;
+        if (lbl) lbl.classList.toggle('checked', r.checked);
+      });
+    }
+    document.querySelectorAll('input[name="beamType"]').forEach(function(r) {
+      r.addEventListener('change', updateBeamLabels);
+    });
+    updateBeamLabels();
+  })();
+</script>
+
+</body>
+</html>
