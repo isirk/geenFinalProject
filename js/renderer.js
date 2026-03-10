@@ -158,8 +158,8 @@ const Renderer = (() => {
    */
   function render(canvas, result, params, loadFraction = 1) {
     const ctx = canvas.getContext('2d');
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.clientWidth;
+    const H = canvas.clientHeight;
 
     // Clear
     ctx.clearRect(0, 0, W, H);
@@ -172,18 +172,24 @@ const Renderer = (() => {
     const { beamType, L, P } = params;
     const { points, stressPoints, maxDeflection, maxStress, yieldStrength, hasYielded } = result;
 
-    // Layout: beam spans 80% of canvas width, centred vertically
+    // Layout: beam spans majority of canvas width, centred vertically
     const marginX = beamType === 'cantilever' ? 60 : 50;
-    const marginTop = 70;
-    const marginBottom = 80;
-    const beamDrawW = W - marginX * 2;
-    const beamBaseY = H / 2 - 20;
-    const availH = H - marginTop - marginBottom;
+    const marginTop = 40;
+    const marginBottom = 60;
+    const beamDrawW = Math.max(10, W - marginX * 2);
+    const beamBaseY = H / 2;
+    const availH = Math.max(10, H - marginTop - marginBottom);
 
     // Scale deflection to fit within the canvas nicely
-    // Use up to 35% of available vertical space for max deflection
-    const maxPixelDef = availH * 0.38;
-    const defScale = maxDeflection > 0 ? maxPixelDef / maxDeflection : 1;
+    // Use up to ~35% of available vertical space for max deflection,
+    // with bounds so tiny deflections don't explode visually.
+    const maxPixelDef = availH * 0.35;
+    let defScale = maxDeflection > 0 ? maxPixelDef / maxDeflection : 1;
+    const minScale = availH * 0.08;
+    const maxScale = availH * 1.0;
+    if (maxDeflection > 0) {
+      defScale = Math.min(maxScale / maxDeflection, Math.max(minScale / maxDeflection, defScale));
+    }
 
     // x-mapping: beam position → canvas x
     const toCanvasX = (x) => marginX + (x / L) * beamDrawW;
@@ -315,8 +321,8 @@ const Renderer = (() => {
    */
   function renderStressDiagram(canvas, result, params, loadFraction = 1) {
     const ctx = canvas.getContext('2d');
-    const W = canvas.width;
-    const H = canvas.height;
+    const W = canvas.clientWidth;
+    const H = canvas.clientHeight;
     ctx.clearRect(0, 0, W, H);
     ctx.fillStyle = '#0f1117';
     roundRect(ctx, 0, 0, W, H, 10);
@@ -327,8 +333,8 @@ const Renderer = (() => {
     const { points } = result;
 
     const marginX = 50;
-    const marginTop = 28;
-    const marginBottom = 28;
+    const marginTop = 24;
+    const marginBottom = 30;
     const innerH = H - marginTop - marginBottom;
     const beamDrawW = W - marginX * 2;
 

@@ -270,11 +270,19 @@ select:focus {
 /* ── Canvas area ────────────────────────────────────────────────────────── */
 .canvas-area {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   background: var(--bg);
-  padding: 20px;
-  gap: 16px;
+  padding: 20px 28px;
   overflow: hidden;
+}
+
+.canvas-column {
+  width: 100%;
+  max-width: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 auto;
 }
 
 .canvas-wrapper {
@@ -286,6 +294,7 @@ select:focus {
 
 canvas {
   display: block;
+  width: 100%;
   border-radius: var(--radius);
 }
 
@@ -431,7 +440,7 @@ footer {
   }
 
   .canvas-area {
-    padding: 14px;
+    padding: 14px 16px;
   }
 
   .theory-grid {
