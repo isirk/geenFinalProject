@@ -155,31 +155,32 @@
 
   <!-- ── Main Canvas Area ────────────────────────────────────────────────── -->
   <main class="canvas-area">
-
-    <!-- Beam Visualization -->
-    <div class="canvas-wrapper">
-      <canvas id="beamCanvas"></canvas>
-    </div>
-
-    <!-- Stress Diagram -->
-    <div class="canvas-wrapper">
-      <canvas id="stressCanvas"></canvas>
-    </div>
-
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="label">Max Deflection (δ_max)</div>
-        <div class="value" id="outDeflection">—</div>
+    <div class="canvas-column">
+      <!-- Beam Visualization -->
+      <div class="canvas-wrapper">
+        <canvas id="beamCanvas"></canvas>
       </div>
-      <div class="stat-card">
-        <div class="label">Max Stress (σ_max)</div>
-        <div class="value" id="outStress">—</div>
+
+      <!-- Stress Diagram -->
+      <div class="canvas-wrapper">
+        <canvas id="stressCanvas"></canvas>
       </div>
-      <div class="stat-card wide">
-        <div class="label">Stress vs. Yield Strength</div>
-        <div class="value" id="outYield">—</div>
-        <div><span class="badge badge-safe" id="yieldBadge">✓ Safe</span></div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Max Deflection (δ_max)</div>
+          <div class="value" id="outDeflection">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Max Stress (σ_max)</div>
+          <div class="value" id="outStress">—</div>
+        </div>
+        <div class="stat-card wide">
+          <div class="label">Stress vs. Yield Strength</div>
+          <div class="value" id="outYield">—</div>
+          <div><span class="badge badge-safe" id="yieldBadge">✓ Safe</span></div>
+        </div>
       </div>
     </div>
 

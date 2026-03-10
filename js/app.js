@@ -94,23 +94,33 @@
   }
 
   function resizeCanvases() {
-    const container = beamCanvas.parentElement;
+    if (!beamCanvas || !stressCanvas) return;
+
+    const column = beamCanvas.closest('.canvas-column') || beamCanvas.parentElement;
     const dpr = window.devicePixelRatio || 1;
-    const w = container.clientWidth;
-    const bh = Math.max(260, Math.min(400, window.innerHeight * 0.38));
-    const sh = 110;
 
-    beamCanvas.width   = w * dpr;
-    beamCanvas.height  = bh * dpr;
-    beamCanvas.style.width  = w + 'px';
-    beamCanvas.style.height = bh + 'px';
-    beamCanvas.getContext('2d').scale(dpr, dpr);
+    const cssWidth = Math.max(320, column.clientWidth);
+    const beamCssHeight = Math.max(260, Math.min(420, window.innerHeight * 0.38));
+    const stressCssHeight = 120;
 
-    stressCanvas.width  = w * dpr;
-    stressCanvas.height = sh * dpr;
-    stressCanvas.style.width  = w + 'px';
-    stressCanvas.style.height = sh + 'px';
-    stressCanvas.getContext('2d').scale(dpr, dpr);
+    const beamCtx = beamCanvas.getContext('2d');
+    const stressCtx = stressCanvas.getContext('2d');
+
+    // Reset transforms before resizing to avoid compounding scales
+    beamCtx.setTransform(1, 0, 0, 1, 0, 0);
+    stressCtx.setTransform(1, 0, 0, 1, 0, 0);
+
+    beamCanvas.width = Math.round(cssWidth * dpr);
+    beamCanvas.height = Math.round(beamCssHeight * dpr);
+    beamCanvas.style.width = cssWidth + 'px';
+    beamCanvas.style.height = beamCssHeight + 'px';
+    beamCtx.scale(dpr, dpr);
+
+    stressCanvas.width = Math.round(cssWidth * dpr);
+    stressCanvas.height = Math.round(stressCssHeight * dpr);
+    stressCanvas.style.width = cssWidth + 'px';
+    stressCanvas.style.height = stressCssHeight + 'px';
+    stressCtx.scale(dpr, dpr);
   }
 
   // ─── Section dim panels ───────────────────────────────────────────────────────
@@ -140,16 +150,8 @@
   function draw(params, result, fraction) {
     const ctx1 = beamCanvas.getContext('2d');
     const ctx2 = stressCanvas.getContext('2d');
-    // Reset transforms before render (resizeCanvases may have applied a DPR scale)
-    const dpr = window.devicePixelRatio || 1;
-    ctx1.save();
-    ctx2.save();
-
     Renderer.render(beamCanvas, result, params, fraction);
     Renderer.renderStressDiagram(stressCanvas, result, params, fraction);
-
-    ctx1.restore();
-    ctx2.restore();
   }
 
   let pendingParams = null;
